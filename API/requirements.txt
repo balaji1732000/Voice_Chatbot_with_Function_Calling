@@ -8,6 +8,8 @@ certifi==2023.7.22
 charset-normalizer==3.2.0
 click==8.1.6
 colorama==0.4.6
+pywin32
+pypiwin32==220
 comtypes==1.2.0
 fastapi==0.92.0
 Flask==2.2.5
