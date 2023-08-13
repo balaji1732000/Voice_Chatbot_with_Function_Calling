@@ -23,7 +23,6 @@ multidict==6.0.4
 openai==0.27.8
 PyAudio==0.2.13
 pydantic==1.10.12
-pypiwin32==223
 python-decouple==3.8
 python-multipart==0.0.6
 pyttsx3==2.90
