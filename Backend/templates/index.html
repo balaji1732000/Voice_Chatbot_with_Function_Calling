@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Speech-to-Speech Bot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px #aaa;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        button {
+            margin-top: 10px;
+        }
+
+        audio {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Speech-to-Speech Bot</h1>
+        <button id="recordButton">Record Audio</button>
+        <p id="status">Status: Idle</p>
+        <audio id="audioPlayer" controls style="display: none;"></audio>
+    </div>
+
+    <script>
+        const recordButton = document.getElementById('recordButton');
+        const statusText = document.getElementById('status');
+        const audioPlayer = document.getElementById('audioPlayer');
+
+        recordButton.addEventListener('click', async () => {
+            statusText.textContent = 'Status: Loading...';
+            recordButton.disabled = true;
+
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const mediaRecorder = new MediaRecorder(stream);
+
+            const chunks = [];
+            mediaRecorder.ondataavailable = event => {
+                chunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+                const blob = new Blob(chunks, { type: 'audio/wav' });
+                const url = URL.createObjectURL(blob);
+                audioPlayer.src = url;
+                audioPlayer.style.display = 'block';
+                statusText.textContent = 'Status: Listening;
+
+                const formData = new FormData();
+                formData.append('audio', blob, 'audio.wav');
+                
+                // Send the recorded audio to the server for processing
+                try {
+                    const response = await fetch('/process', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (response.ok) {
+                        const audioResponse = await response.blob();
+                        console.log(audioResponse);
+                        const audioUrl = URL.createObjectURL(audioResponse);
+                        console.log(audioUrl);
+                        audioPlayer.src = audioUrl;
+                        audioPlayer.style.display = 'block';
+                        statusText.textContent = 'Status: Audio response received';
+                    }
+                } catch (error) {
+                    console.error('Error processing audio:', error);
+                }
+
+                stream.getTracks().forEach(track => track.stop());
+                recordButton.disabled = false;
+            };
+
+            mediaRecorder.start();
+            setTimeout(() => mediaRecorder.stop(), 5000); // Stop recording after 5 seconds
+        });
+    </script>
+</body>
+</html>
