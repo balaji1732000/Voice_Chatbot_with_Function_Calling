@@ -12,7 +12,7 @@ is_whisper = False
 
 
 def process_with_azure(prompt):
-    url = "https://dwspoc.openai.azure.com/openai/deployments/GPTDavinci/completions?api-version=2022-12-01"
+    url = "***************************************************************************"
 
     headers = {"Content-Type": "application/json", "api-key": azure_api_key}
 
